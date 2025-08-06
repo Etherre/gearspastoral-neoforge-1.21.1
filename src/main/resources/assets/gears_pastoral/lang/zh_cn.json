@@ -1,0 +1,12 @@
+{
+  "itemGroup.gears_pastoral": "Example Mod Tab",
+  "block.gears_pastoral.example_block": "Example Block",
+  "item.gears_pastoral.example_item": "Example Item",
+  "gears_pastoral.configuration.title": "Gears Pastoral Configs",
+  "gears_pastoral.configuration.section.gears_pastoral.common.toml": "Gears Pastoral Configs",
+  "gears_pastoral.configuration.section.gears_pastoral.common.toml.title": "Gears Pastoral Configs",
+  "gears_pastoral.configuration.items": "Item List",
+  "gears_pastoral.configuration.logDirtBlock": "Log Dirt Block",
+  "gears_pastoral.configuration.magicNumberIntroduction": "Magic Number Text",
+  "gears_pastoral.configuration.magicNumber": "Magic Number"
+}
