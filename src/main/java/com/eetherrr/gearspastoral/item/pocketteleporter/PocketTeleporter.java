@@ -6,7 +6,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -22,63 +21,50 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PocketTeleporter extends Item {
 	private static final Map<UUID, TeleportData> PLAYER_POSITION = new ConcurrentHashMap<>();
-	private static final int COOLDOWN_TICKS = 20 * 5;
+	private static final int COOLDOWN_TICKS = 20*5;
 	private static final ResourceKey<Level> POCKET_SPACE = ResourceKey.create(Registries.DIMENSION, GearsPastoral.id("pocket_space"));
-	
+
 	public PocketTeleporter(Properties properties) {
 		super(properties);
 	}
-	
+
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
 		ItemStack itemStack = player.getItemInHand(usedHand);
-		
-		if(!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-			player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
+		if(!level.isClientSide()) {
 			ServerLevel pocketLevel = player.getServer().getLevel(POCKET_SPACE);
 			if(level.dimension().equals(POCKET_SPACE)) {
-				returnFromPocket(serverPlayer);
+				returnFromPocket(player);
 			}else {
-				savePositionAndTeleport(serverPlayer, pocketLevel);
+				savePositionAndTeleport(player, pocketLevel);
 			}
 		}
+		player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
 		return InteractionResultHolder.consume(itemStack);
 	}
-	
-	private void savePositionAndTeleport(ServerPlayer serverPlayer, ServerLevel pocketLevel) {
-		TeleportData data = new TeleportData(
-				serverPlayer
-						.level()
-						.dimension(), serverPlayer.position(), serverPlayer.getYRot(), serverPlayer.getXRot()
-		);
-		
-		PLAYER_POSITION.put(serverPlayer.getUUID(), data);
-		
-		serverPlayer.changeDimension(new DimensionTransition(pocketLevel, new Vec3(-7, -11, 6), Vec3.ZERO, 180f, serverPlayer.getXRot(), DimensionTransition.DO_NOTHING));
-		
-		serverPlayer.displayClientMessage(Component.translatable("msg.pocket_dimension.enter").withStyle(ChatFormatting.GREEN), true);
+
+	private void savePositionAndTeleport(Player player, ServerLevel pocketLevel) {
+		TeleportData data = new TeleportData(player.level().dimension(), player.position(), player.getYRot(), player.getXRot());
+		PLAYER_POSITION.put(player.getUUID(), data);
+		player.changeDimension(new DimensionTransition(pocketLevel, new Vec3(-7, -11, 6), Vec3.ZERO, 180f, player.getXRot(), DimensionTransition.DO_NOTHING));
+		player.displayClientMessage(Component.translatable("msg.pocket_dimension.enter").withStyle(ChatFormatting.GREEN), true);
 	}
-	
-	private void returnFromPocket(ServerPlayer serverPlayer) {
-		UUID uuid = serverPlayer.getUUID();
+
+	private void returnFromPocket(Player player) {
+		UUID uuid = player.getUUID();
 		if(!PLAYER_POSITION.containsKey(uuid)) {
-			serverPlayer.displayClientMessage(Component.translatable("msg.pocket_dimension.no_position").withStyle(ChatFormatting.RED), true);
+			player.displayClientMessage(Component.translatable("msg.pocket_dimension.no_position").withStyle(ChatFormatting.RED), true);
 			return;
 		}
-		
 		TeleportData data = PLAYER_POSITION.get(uuid);
 		PLAYER_POSITION.remove(uuid);
-		
-		ServerLevel targetLevel = serverPlayer.getServer().getLevel(data.dimension());
-		if(targetLevel == null) {
-			targetLevel = serverPlayer.getServer().overworld();
+		ServerLevel targetLevel = player.getServer().getLevel(data.dimension());
+		if(targetLevel==null) {
+			targetLevel = player.getServer().overworld();
 		}
-		
-		serverPlayer.teleportTo(targetLevel, data.position().x, data.position().y, data.position().z, data.yRot(), data.xRot());
-		
-		serverPlayer.displayClientMessage(Component.translatable("msg.pocket_dimension.exit").withStyle(ChatFormatting.GREEN), true);
+		player.changeDimension(new DimensionTransition(targetLevel, data.position, Vec3.ZERO, data.yRot(), data.xRot(), DimensionTransition.DO_NOTHING));
+		player.displayClientMessage(Component.translatable("msg.pocket_dimension.exit").withStyle(ChatFormatting.GREEN), true);
 	}
-	
+
 	private record TeleportData(ResourceKey<Level> dimension, Vec3 position, float yRot, float xRot) {}
-	
 }
