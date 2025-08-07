@@ -1,12 +1,13 @@
 {
-  "itemGroup.gears_pastoral": "Example Mod Tab",
-  "block.gears_pastoral.example_block": "Example Block",
-  "item.gears_pastoral.example_item": "Example Item",
+  "item.gears_pastoral.pocket_teleporter": "口袋空间传送器",
   "gears_pastoral.configuration.title": "Gears Pastoral Configs",
   "gears_pastoral.configuration.section.gears_pastoral.common.toml": "Gears Pastoral Configs",
   "gears_pastoral.configuration.section.gears_pastoral.common.toml.title": "Gears Pastoral Configs",
   "gears_pastoral.configuration.items": "Item List",
   "gears_pastoral.configuration.logDirtBlock": "Log Dirt Block",
   "gears_pastoral.configuration.magicNumberIntroduction": "Magic Number Text",
-  "gears_pastoral.configuration.magicNumber": "Magic Number"
+  "gears_pastoral.configuration.magicNumber": "Magic Number",
+  "msg.pocket_dimension.enter": "欢迎进入口袋空间",
+  "msg.pocket_dimension.exit": "已退出口袋空间",
+  "msg.pocket_dimension.no_position": "错误！不存在维度"
 }

@@ -1,4 +1,4 @@
-package com.eetherrr.gearspastoral.blocks;
+package com.eetherrr.gearspastoral.block;
 
 import com.eetherrr.gearspastoral.GearsPastoral;
 import net.neoforged.bus.api.IEventBus;
